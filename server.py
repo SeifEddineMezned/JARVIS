@@ -329,7 +329,15 @@ async def ws_endpoint(ws: WebSocket):
                 print(f"[brain] error: {exc}")
                 overlay.control(False)
                 msg = str(exc)
-                reply = ("Every one of my neural cores is out of free quota or overloaded right now. "
+                local = [b for b in brain.backends if b.label.startswith("ollama/")]
+                cloud_ok = [b for b in brain.backends if not b.label.startswith("ollama/")
+                            and b.label not in brain._down and b.label not in brain._dead]
+                if local and not cloud_ok and all(b.label in brain._down for b in local):
+                    reply = (f"My offline brain is still downloading in the other window, {HONORIFIC}. Give it a few "
+                             f"minutes and I'll switch it on by myself, or add a free Gemini key to use me right now.")
+                else:
+                    reply = None
+                reply = reply or ("Every one of my neural cores is out of free quota or overloaded right now. "
                          "Add another free API key, or give me a moment."
                          if "429" in msg or "quota" in msg.lower() or "503" in msg
                          else "I'm afraid I hit a snag reaching my neural cores. Please check the API keys and connection.")

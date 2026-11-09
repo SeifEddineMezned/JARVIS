@@ -1,0 +1,25 @@
+=====================================================
+   J.A.R.V.I.S.  -  HOW TO START  (no technical skills needed)
+=====================================================
+
+1) Make sure you EXTRACTED the ZIP first
+   (right-click the ZIP  ->  "Extract All"  ->  open the new folder).
+
+2) Get your free AI key (1 minute, no credit card):
+   - Go to  https://aistudio.google.com/apikey
+   - Sign in with Google, click "Create API key", and copy it.
+
+3) Double-click  start.bat
+   - If Windows shows "Windows protected your PC": click "More info" -> "Run anyway".
+   - It installs everything by itself (about 2 minutes the first time).
+   - When it asks, paste your key (right-click in the black window) and press Enter.
+
+4) The Jarvis screen opens. Click INITIALIZE, then click "Allow" for the microphone.
+
+5) Say:  "Jarvis, show me what you can do."
+
+-----------------------------------------------------
+ Next time: just double-click start.bat again (it starts in seconds).
+ Emergency stop: push your mouse hard into any corner of the screen.
+ To stop Jarvis: close the black window.
+-----------------------------------------------------

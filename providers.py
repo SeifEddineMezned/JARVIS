@@ -29,6 +29,14 @@ class NoVision(Exception):
     pass
 
 
+def strip_think(text: str) -> str:
+    """Remove <think>...</think> reasoning that some local models emit, so it is never spoken."""
+    import re
+    text = re.sub(r"<think>[\s\S]*?</think>", "", text or "")
+    text = re.sub(r"^[\s\S]*?</think>", "", text)          # unclosed opening tag case
+    return text.strip()
+
+
 def _new_id() -> str:
     return "call_" + uuid.uuid4().hex[:20]
 
@@ -135,13 +143,15 @@ class OpenAIBackend:
     kind = "openai"
 
     def __init__(self, name: str, base_url: str, api_key: str, model: str, vision_model: str | None = None,
-                 extra_headers: dict | None = None):
+                 extra_headers: dict | None = None, extra_body: dict | None = None):
         from openai import OpenAI
-        self.client = OpenAI(base_url=base_url, api_key=api_key, timeout=TIMEOUT, max_retries=0,
+        local = name == "ollama"   # local models may need to load into memory / run on CPU -> be patient
+        self.client = OpenAI(base_url=base_url, api_key=api_key, timeout=300 if local else TIMEOUT, max_retries=0,
                              default_headers=extra_headers or None)
         self.name, self.model, self.vision_model = name, model, vision_model
         self.label = f"{name}/{model}"
         self.vision_ok = bool(vision_model)
+        self.extra_body = extra_body or None   # e.g. Ollama: {"reasoning_effort": "none"} -> no slow thinking
 
     @staticmethod
     def _to_messages(messages, system):
@@ -163,7 +173,7 @@ class OpenAIBackend:
     def chat(self, messages, system, tools, temperature=0.7):
         resp = self.client.chat.completions.create(
             model=self.model, messages=self._to_messages(messages, system), temperature=temperature,
-            tools=[{"type": "function", "function": t} for t in tools], tool_choice="auto", max_tokens=4096,
+            tools=[{"type": "function", "function": t} for t in tools], tool_choice="auto", max_tokens=4096, extra_body=self.extra_body,
         )
         msg = resp.choices[0].message
         calls = []
@@ -173,23 +183,23 @@ class OpenAIBackend:
             except json.JSONDecodeError:
                 args = {}
             calls.append({"id": tc.id or _new_id(), "name": tc.function.name, "args": args, "sig": None})
-        return {"text": (msg.content or "").strip(), "calls": calls}
+        return {"text": strip_think(msg.content or ""), "calls": calls}
 
     def vision(self, jpeg, prompt, json_mode=False):
         if not self.vision_model:
             raise NoVision(self.label)
         url = "data:image/jpeg;base64," + base64.b64encode(jpeg).decode()
         resp = self.client.chat.completions.create(
-            model=self.vision_model, temperature=0.1, max_tokens=800,
+            model=self.vision_model, temperature=0.1, max_tokens=1200, extra_body=self.extra_body,
             messages=[{"role": "user", "content": [{"type": "text", "text": prompt},
                                                    {"type": "image_url", "image_url": {"url": url}}]}],
         )
-        return resp.choices[0].message.content or ""
+        return strip_think(resp.choices[0].message.content or "")
 
     def stream(self, prompt, max_tokens=16000):
         for ev in self.client.with_options(timeout=STREAM_TIMEOUT).chat.completions.create(
                 model=self.model, stream=True, temperature=0.8, max_tokens=max_tokens,
-                messages=[{"role": "user", "content": prompt}]):
+                messages=[{"role": "user", "content": prompt}], extra_body=self.extra_body):
             if ev.choices and ev.choices[0].delta and ev.choices[0].delta.content:
                 yield ev.choices[0].delta.content
 
@@ -261,7 +271,8 @@ def _discover_one(name: str) -> list:
         if not model:
             return []
         base = os.getenv("OLLAMA_URL", "http://localhost:11434") + "/v1"
-        return [OpenAIBackend("ollama", base, "ollama", model, os.getenv("OLLAMA_VISION_MODEL") or None)]
+        return [OpenAIBackend("ollama", base, "ollama", model, os.getenv("OLLAMA_VISION_MODEL") or None,
+                              extra_body={"reasoning_effort": "none"})]
 
     if name == "custom":
         base, model = os.getenv("CUSTOM_BASE_URL"), os.getenv("CUSTOM_MODEL")

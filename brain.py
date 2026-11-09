@@ -140,7 +140,7 @@ TIPS:
 - You may add a very short spoken line (a quick quip is welcome) but ONLY together with the tool call in the same response.
 
 Context: {platform.system()} {platform.release()}, screen {tools.SCREEN_W}x{tools.SCREEN_H}, machine "{platform.node()}".
-Right now: {situation()}.
+Each user message starts with a [live status] tag (time, CPU, battery...) you can use for context or humour.
 """
 
 
@@ -382,7 +382,9 @@ class Brain:
     async def run(self, text: str, ctx, say) -> str:
         """Run one user request to completion. `say(text)` speaks interim lines."""
         self._trim()
-        self.history.append({"role": "user", "content": f"[{tools.now_string()}] {text}"})
+        # live facts go in the message (not the system prompt) so the big system prompt stays identical
+        # between requests -> providers and local models can cache it -> much faster answers
+        self.history.append({"role": "user", "content": f"[{tools.now_string()} | {situation()}] {text}"})
         system = system_prompt(self.honorific)
         acted = nudged = False
         done_calls: dict[str, str] = {}      # "name+args" -> result json (this request)

@@ -9,7 +9,7 @@
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Free AI](https://img.shields.io/badge/AI-100%25%20free%20tiers-00e5ff)
-![Offline](https://img.shields.io/badge/Ollama-offline%20%26%20unlimited-black?logo=ollama)
+![Setup](https://img.shields.io/badge/setup-1%20click-brightgreen)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 
 **[Quick start](#-quick-start-2-minutes)** · **[Free AI keys](#-free-ai-keys)** · **[What to say](#%EF%B8%8F-things-to-say)** · **[How it works](#-how-it-works)** · **[Troubleshooting](#%EF%B8%8F-troubleshooting)**
@@ -30,7 +30,7 @@
 | 🏗️ **Builds apps live** | *"Build a snake game"*: you watch the code stream in the HUD, then it opens in VS Code and the browser. |
 | 🎤 **Presents like a human** | *"Present it"*: it scrolls slide by slide, points with the mouse, clicks the buttons, and narrates. |
 | 🎨 **Reshapes itself** | *"Go Iron Man mode"* / *"turn green"*: the whole interface and the desktop effects recolor live. |
-| 🧠 **Never runs out** | Chains every free AI you give it (Gemini, Groq, OpenRouter, Mistral, GitHub, Ollama) and switches automatically. |
+| 🧠 **Never runs out** | Chains every free AI key you give it (Gemini, Groq, OpenRouter, Mistral, GitHub) and switches automatically. |
 
 <div align="center">
 <img src="assets/themes.gif" alt="Live theme switching" width="80%">
@@ -41,26 +41,28 @@
 
 ## 🚀 Quick start (2 minutes)
 
-> **You need:** Windows 10/11 · [Python 3.10+](https://www.python.org/downloads/) (tick **"Add python.exe to PATH"**) · Microsoft Edge or Chrome · a microphone
+> **You need:** Windows 10/11 · internet · a microphone · **one free AI key** (1 minute to get, see below). **That's it.**
 
-**1. Download.** Click the green **Code** button, choose **Download ZIP**, and extract it. Or:
+**1. Download.** Click the green **Code** button, choose **Download ZIP**, and **extract** it (right-click → *Extract All*). Or:
 ```bash
 git clone https://github.com/SeifEddineMezned/JARVIS.git
 ```
 
-**2. Double-click `start.bat`.** The first time, it installs everything (about 1 minute) and opens your settings file in Notepad.
+**2. Get a free key.** Go to **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**, sign in with Google, click **Create API key**, and copy it.
 
-**3. Paste one free key** (see the next section), save, close Notepad, and **double-click `start.bat` again**.
+**3. Double-click `start.bat`.** It installs **everything** by itself (Python if you don't have it, plus all of Jarvis's packages, about 2 minutes the first time), then asks you to **paste your key**. It checks that the key works and launches Jarvis.
 
 **4.** The HUD opens. Click **INITIALIZE**, click **Allow** for the microphone, and say:
 
 > ### *"Jarvis, show me what you can do."*
 
+Next time, just double-click `start.bat`. It skips everything already installed and launches in seconds.
+
 ---
 
 ## 🔑 Free AI keys
 
-Paste **at least one** into `.env`. **Add more to get more free requests:** Jarvis chains all of them and switches the moment one is busy or out of quota (watch the **NEURAL CORES** panel).
+You need **one** key (`start.bat` asks for it). **Want more free requests?** Open the `.env` file with Notepad and paste extra keys: Jarvis chains all of them and switches the moment one is busy or out of quota (watch the **NEURAL CORES** panel).
 
 | Provider | Free tier\* | Card? | Get a key (≈1 min) |
 |---|---|:-:|---|
@@ -69,17 +71,16 @@ Paste **at least one** into `.env`. **Add more to get more free requests:** Jarv
 | **OpenRouter** | 50 requests/day on free models | No | [openrouter.ai/keys](https://openrouter.ai/keys) |
 | **Mistral** | free "Experiment" plan | No (phone) | [console.mistral.ai/api-keys](https://console.mistral.ai/api-keys) |
 | **GitHub Models** | ~50–150 requests/day with any GitHub account | No | [github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens) (permission `models:read`) |
-| 🏠 **Ollama** (local) | **Unlimited · offline · private** | — | [ollama.com](https://ollama.com), then `ollama pull qwen3:8b` and set `OLLAMA_MODEL=qwen3:8b` |
+| 🏠 **Ollama** (advanced) | Unlimited · offline · private, but needs a strong PC | — | Install [ollama.com](https://ollama.com), run `ollama pull qwen3-vl:4b`, set `OLLAMA_MODEL=qwen3-vl:4b` |
 
 <sub>\*Free tiers change often. Check each provider's page. One voice command uses about 2–4 requests.</sub>
 
 **Recommended:** `GEMINI_API_KEY` + `GROQ_API_KEY`, both free with no card.
 
 ```ini
-# .env  (git-ignored: never commit it!)
+# .env  (created by start.bat, git-ignored: never commit it!)
 GEMINI_API_KEY=AIza...
 GROQ_API_KEY=gsk_...
-OLLAMA_MODEL=qwen3:8b     # optional: unlimited local fallback
 ```
 
 ---
@@ -150,12 +151,14 @@ Restart, then say *"Jarvis, tell me a joke about Python."* The AI discovers the 
 
 | Problem | Fix |
 |---|---|
-| `Python 3.10 or newer is required` | Install Python from python.org with **"Add python.exe to PATH"** ticked |
-| Windows says "Windows protected your PC" | **More info → Run anyway** (it's a plain `.bat` file, so you can read it first) |
+| Windows says "Windows protected your PC" | **More info → Run anyway** (it's a plain `.bat` + `.ps1` script, so you can read them first) |
+| Setup stopped halfway (Wi-Fi dropped…) | Just double-click `start.bat` again. Finished steps are skipped. |
+| "That key was rejected" | Copy the **whole** key again from the provider's page, then paste it with a right-click in the black window |
+| I want to change my key | Open `.env` with Notepad, replace the key after `GEMINI_API_KEY=`, save, and restart `start.bat` |
 | Jarvis doesn't hear me | Use **Edge or Chrome**, click **Allow** for the mic, check the **MIC** chip. Hold **SPACE** to talk without the wake word. |
 | The grey text says `heard: "…"` | The mic works, but you didn't start with "Jarvis". Say it first, or hold SPACE. |
 | "This HUD is on standby" | Another Jarvis window is open. Only one listens at a time. Click to take control. |
-| "Out of free quota" | Add another free key to `.env` (Groq is the most generous) or set `OLLAMA_MODEL` |
+| "Out of free quota" | Add another free key to `.env` (Groq is the most generous) and restart `start.bat` |
 | Jarvis clicks the wrong spot | Make sure the target is visible on your **main** monitor. Gemini gives the most accurate vision. |
 | Something goes wrong mid-action | **Slam the mouse into a screen corner** (fail-safe), or press **ESC** |
 | "Camera unavailable" | Click **Allow** for the camera in the HUD (asked the first time), and close other apps using the webcam (Zoom, Teams…) |
