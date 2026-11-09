@@ -45,7 +45,7 @@
 
 **1. Download.** Click the green **Code** button, choose **Download ZIP**, and extract it. Or:
 ```bash
-git clone https://github.com/<your-username>/<this-repo>.git
+git clone https://github.com/SeifEddineMezned/JARVIS.git
 ```
 
 **2. Double-click `start.bat`.** The first time, it installs everything (about 1 minute) and opens your settings file in Notepad.
