@@ -1,0 +1,11 @@
+google-genai>=1.30
+openai>=1.40
+fastapi
+uvicorn[standard]
+pyautogui
+mss
+pillow
+psutil
+edge-tts
+pyperclip
+python-dotenv

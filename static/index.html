@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/hud.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<!-- ================= BOOT SCREEN ================= -->
+<section id="boot">
+  <div class="boot-inner">
+    <button id="initBtn" aria-label="Initialize">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="92" class="b-ring r1"/>
+        <circle cx="100" cy="100" r="78" class="b-ring r2"/>
+        <circle cx="100" cy="100" r="62" class="b-ring r3"/>
+        <polygon points="100,62 134,121 66,121" class="b-tri"/>
+        <circle cx="100" cy="100" r="16" class="b-core"/>
+      </svg>
+      <span>INITIALIZE</span>
+    </button>
+    <div class="boot-title">J.A.R.V.I.S.</div>
+    <div class="boot-sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+    <pre id="bootLog"></pre>
+  </div>
+</section>
+
+<!-- ================= MAIN HUD ================= -->
+<main id="hud" class="hidden">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">J.A.R.V.I.S.</div>
+      <div class="tag">STARK-GRADE INTERFACE // OPENJARVIS MULTI-CORE AI</div>
+    </div>
+    <div class="clock">
+      <div id="clockTime">00:00:00</div>
+      <div id="clockDate">—</div>
+    </div>
+    <div class="links">
+      <div class="chip"><i id="linkDot" class="dot"></i><span id="linkTxt">LINKING</span></div>
+      <div class="chip"><span class="lbl">CORE</span><span id="modelName">—</span></div>
+      <div class="chip clickable" id="modeChip" title="Toggle wake word / push-to-talk"><span class="lbl">MIC</span><span id="modeTxt">WAKE WORD</span></div>
+      <div class="chip clickable" id="langChip" title="Change language"><span class="lbl">LANG</span><span id="langTxt">EN</span></div>
+    </div>
+  </header>
+
+  <!-- left column -->
+  <aside class="col left">
+    <div class="panel">
+      <div class="ph"><span>SYSTEM TELEMETRY</span><em id="hostName">—</em></div>
+      <div class="gauges">
+        <div class="gauge" id="gCpu"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="g-bg"/><circle cx="60" cy="60" r="50" class="g-fg"/><circle cx="60" cy="60" r="40" class="g-in"/></svg><b>0%</b><span>CPU</span></div>
+        <div class="gauge" id="gRam"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="g-bg"/><circle cx="60" cy="60" r="50" class="g-fg"/><circle cx="60" cy="60" r="40" class="g-in"/></svg><b>0%</b><span>MEMORY</span></div>
+        <div class="gauge" id="gDisk"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="g-bg"/><circle cx="60" cy="60" r="50" class="g-fg"/><circle cx="60" cy="60" r="40" class="g-in"/></svg><b>0%</b><span>STORAGE</span></div>
+      </div>
+      <div class="sub">CORE LOAD MATRIX</div>
+      <div id="cores" class="cores"></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span>NETWORK UPLINK</span><em id="netTxt">↑0 ↓0 KB/s</em></div>
+      <canvas id="netChart" height="90"></canvas>
+    </div>
+    <div class="panel kv">
+      <div class="ph"><span>POWER &amp; PROCESS</span></div>
+      <div class="row"><span>POWER CELL</span><b id="batTxt">—</b></div>
+      <div class="bar"><i id="batBar"></i></div>
+      <div class="row"><span>ACTIVE PROCESSES</span><b id="procTxt">—</b></div>
+      <div class="row"><span>DISPLAY MATRIX</span><b id="screenTxt">—</b></div>
+      <div class="row"><span>OVERLAY PROJECTION</span><b id="ovTxt">—</b></div>
+    </div>
+  </aside>
+
+  <!-- center -->
+  <section class="center">
+    <div class="reactor-wrap">
+      <canvas id="reactor"></canvas>
+      <div class="state" id="stateTxt">STANDBY</div>
+    </div>
+    <div class="transcript">
+      <div class="line user"><span class="who">YOU</span><span id="userLine">Say "Jarvis" followed by a command…</span></div>
+      <div class="line ai"><span class="who">JARVIS</span><span id="aiLine"></span></div>
+    </div>
+  </section>
+
+  <!-- right column -->
+  <aside class="col right">
+    <div class="panel vision">
+      <div class="ph"><span>OPTICAL FEED</span><em id="visionLabel">NO SIGNAL</em></div>
+      <div class="feed" id="feed">
+        <img id="feedImg" alt="">
+        <video id="camVideo" muted playsinline></video>
+        <div id="camBoxes"></div>
+        <div class="cam-tag" id="camTag"><i></i>CAMERA LIVE</div>
+        <div class="feed-empty">AWAITING VISUAL INPUT</div>
+        <div class="reticle" id="reticle"><i></i><i></i><i></i></div>
+        <div class="feed-scan"></div>
+        <div class="fab" id="fab">
+          <div class="fab-h"><span id="fabFile">FABRICATING</span><em id="fabStats">0 LINES</em></div>
+          <pre id="codeFeed"></pre>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span>NEURAL CORES</span><em id="coreCount">—</em></div>
+      <ul id="coresList" class="cores-list"></ul>
+    </div>
+    <div class="panel log">
+      <div class="ph"><span>PROTOCOL LOG</span><em id="opCount">0 OPS</em></div>
+      <ul id="log"></ul>
+    </div>
+  </aside>
+
+  <footer class="cmdbar">
+    <button id="micBtn" title="Hold SPACE or click to talk"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12z"/></svg></button>
+    <input id="cmd" autocomplete="off" placeholder='Type a command, or say "Jarvis, open notepad and write a poem about Iron Man"'>
+    <button id="sendBtn">EXECUTE</button>
+    <div class="hints">SPACE hold-to-talk · ESC stop voice · F11 fullscreen · mouse into a corner = emergency stop</div>
+  </footer>
+</main>
+
+<div id="themeFlash"><span id="themeFlashTxt"></span></div>
+<div id="dormant"><div>THIS HUD IS ON STANDBY<small>Another J.A.R.V.I.S. window is active (only one can listen at a time).<br>Click here to take control.</small></div></div>
+<script src="/static/hud.js"></script>
+</body>
+</html>
