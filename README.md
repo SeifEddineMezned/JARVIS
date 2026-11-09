@@ -168,7 +168,7 @@ Restart, then say *"Jarvis, tell me a joke about Python."* The AI discovers the 
 
 <div align="center">
 
-Built on **[OpenJarvis](https://github.com/open-jarvis/OpenJarvis)** · Voice by **edge-tts** · Licensed **Apache 2.0**
+Built By Seif Eddine Mezned · Licensed **Apache 2.0**
 
 <sub>Fan-made educational project. Not affiliated with Marvel or Disney.</sub>
 
